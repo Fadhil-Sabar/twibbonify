@@ -2,6 +2,7 @@ node_modules/
 dist/
 PRD.md
 references/
+*.tsbuildinfo
 
 # Editor
 .vscode/
