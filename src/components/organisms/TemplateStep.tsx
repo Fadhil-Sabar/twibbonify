@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { CheckCircle2, Trash2, UploadCloud } from "lucide-react"
+import { CheckCircle2, Trash2, UploadCloud, WandSparkles } from "lucide-react"
 import { toast } from "sonner"
 import { saveAsset, saveProject } from "../../db/database"
 import { detectTransparency, readImage, validateImageFile } from "../../lib/image"
@@ -93,6 +93,7 @@ export function TemplateStep() {
 
       <div className="upload-tips">
         <p><CheckCircle2 /><span><strong>Gunakan file transparan</strong>Pastikan area wajah pada template sudah dihapus.</span></p>
+        <p><WandSparkles /><span><strong>Gunakan Magic Select</strong>Template tanpa transparansi bisa diatur area fotonya di langkah selanjutnya.</span></p>
         <p><CheckCircle2 /><span><strong>Resolusi optimal</strong>Disarankan resolusi minimal 1080 × 1080 px.</span></p>
       </div>
 

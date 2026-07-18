@@ -9,6 +9,7 @@ export const STEP_META: { id: EditorStep; label: string; short: string }[] = [
 ]
 
 export function route() {
+  if (location.pathname === "/privacy") return "privacy"
   return location.pathname === "/editor" ? "editor" : "landing"
 }
 
