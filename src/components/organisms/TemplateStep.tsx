@@ -46,7 +46,7 @@ export function TemplateStep() {
       }
       update(() => next)
       await saveProject(next)
-      if (!hasTransparency) toast.warning("Template tidak memiliki area transparan. Tentukan area foto secara manual.")
+      if (!hasTransparency) toast.warning("Template tidak memiliki area transparan. Gunakan fitur Magic Select untuk menentukan area foto secara manual.")
     } catch {
       toast.error("Template gagal diproses. Coba gunakan file lain.")
     } finally {

@@ -127,7 +127,7 @@ export function FrameCanvas({ templateUrl, template, frame, onChange, magicState
       </div>
       <div className="canvas-toolbar">
         <Minus /> 100% <Plus />
-        <span />Fit Canvas
+        <span />Sesuaikan
         <button onClick={() => onChange(defaultFrame(template.width, template.height))}>
           <RotateCcw /> Reset
         </button>

@@ -38,7 +38,7 @@ export function PreviewStep() {
     <section>
       <div className="step-heading">
         <span>LANGKAH 4 DARI 5</span>
-        <h1>Atur dan preview</h1>
+        <h1>Atur & Preview</h1>
         <p>Geser, perbesar, atau putar setiap foto sampai pas.</p>
       </div>
 

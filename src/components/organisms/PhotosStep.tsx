@@ -75,13 +75,13 @@ export function PhotosStep() {
           <button className="text-button"><Plus /> Tambah Foto</button>
         </Dropzone>
         <button className="text-button danger" disabled={!project.photos.length} onClick={() => {
-          if (confirm("Hapus semua foto dari project?")) update((value) => ({ ...value, photos: [] }))
+          if (confirm("Hapus semua foto dari project ini?")) update((value) => ({ ...value, photos: [] }))
         }}>
           <Trash2 /> Hapus Semua
         </button>
       </div>
 
-      {busy && <div className="processing"><span className="spinner" /> Memproses antrean foto...</div>}
+      {busy && <div className="processing"><span className="spinner" /> Memproses foto...</div>}
 
       <div className="photo-grid">
         {project.photos.map((photo) => (

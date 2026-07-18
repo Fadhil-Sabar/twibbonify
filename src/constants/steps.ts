@@ -4,8 +4,8 @@ export const STEP_META: { id: EditorStep; label: string; short: string }[] = [
   { id: "template", label: "Upload Template", short: "Template" },
   { id: "frame", label: "Area Foto", short: "Area Foto" },
   { id: "photos", label: "Upload Foto", short: "Foto" },
-  { id: "preview", label: "Atur & Preview", short: "Preview" },
-  { id: "export", label: "Download", short: "Unduh" },
+  { id: "preview", label: "Atur & Preview", short: "Atur" },
+  { id: "export", label: "Unduh", short: "Unduh" },
 ]
 
 export function route() {

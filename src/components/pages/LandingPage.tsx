@@ -12,13 +12,13 @@ export function LandingPage() {
         <section className="hero">
           <div className="hero-copy">
             <span className="eyebrow"><ShieldCheck /> 100% diproses di perangkatmu</span>
-            <h1>Bikin banyak twibbon dalam beberapa langkah.</h1>
-            <p>Upload satu template, masukkan semua foto peserta, lalu download seluruh hasil sekaligus.</p>
+          <h1>Bikin banyak twibbon dalam hitungan menit.</h1>
+          <p>Upload satu template, tambahkan semua foto peserta, lalu unduh seluruh hasil sekaligus.</p>
             <div className="hero-actions">
-              <button className="button" onClick={() => navigate("/editor?step=template")}><ImagePlus />Mulai Buat Twibbon</button>
+              <button className="button" onClick={() => navigate("/editor?step=template")}><ImagePlus /> Mulai Buat Twibbon</button>
               <a className="button secondary" href="#cara-kerja">Lihat Cara Kerja</a>
             </div>
-            <small><LockKeyhole /> Foto tidak diunggah atau disimpan di server.</small>
+            <small><LockKeyhole /> Foto tidak diunggah ke server — semuanya diproses di perangkatmu.</small>
           </div>
           <HeroArt />
         </section>

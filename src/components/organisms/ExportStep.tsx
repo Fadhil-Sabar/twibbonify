@@ -25,9 +25,9 @@ export function ExportStep() {
       downloadBlob(blob, `twibbonify-${new Date().toISOString().slice(0, 10)}.zip`)
     } catch (error) {
       if (error instanceof DOMException && error.name === "AbortError")
-        setState((value) => ({ ...value, status: "cancelled", current: "Export dibatalkan" }))
+        setState((value) => ({ ...value, status: "cancelled", current: "Ekspor dibatalkan" }))
       else {
-        setState((value) => ({ ...value, status: "error", current: "Export gagal" }))
+        setState((value) => ({ ...value, status: "error", current: "Ekspor gagal" }))
         toast.error(error instanceof Error ? error.message : "Export gagal")
       }
     }
@@ -39,13 +39,13 @@ export function ExportStep() {
     <section>
       <div className="step-heading">
         <span>LANGKAH 5 DARI 5</span>
-        <h1>Download hasil</h1>
-        <p>Pilih format lalu unduh seluruh twibbon dalam satu ZIP.</p>
+        <h1>Unduh hasil</h1>
+        <p>Pilih format, lalu unduh seluruh twibbon dalam satu ZIP.</p>
       </div>
 
       <div className="export-layout">
         <div className="settings export-settings">
-          <h2>Pengaturan Export</h2>
+          <h2>Pengaturan Ekspor</h2>
           <label>Format file</label>
           <div className="segmented">
             {(["png", "jpeg", "webp"] as const).map((format) => (
@@ -79,7 +79,7 @@ export function ExportStep() {
 
         <div className="export-summary">
           <div>
-            <span>STATUS PEMBUATAN</span>
+            <span>STATUS EKSPOR</span>
             <h2>{state.status === "processing" ? "Memproses twibbon" : state.status === "done" ? "Semua hasil siap!" : "Siap membuat twibbon"}</h2>
             <p>{project.photos.length} foto · {project.exportSettings.width} × {project.exportSettings.height} px</p>
           </div>
@@ -89,7 +89,7 @@ export function ExportStep() {
           </div>
           <small>{state.current || "Semua proses akan berjalan di perangkat ini."}</small>
           <button className="button full" disabled={state.status === "processing"} onClick={run}>
-            <Sparkles /> Buat Twibbon
+            <Sparkles /> Ekspor Semua
           </button>
           {state.status === "processing" && (
             <button className="text-button danger" onClick={() => controller.current?.abort()}>Batalkan</button>
