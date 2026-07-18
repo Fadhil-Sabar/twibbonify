@@ -17,7 +17,7 @@ export function PrivacyPage() {
         <section className="privacy-content">
           <article>
             <h2><LockKeyhole /> Data yang Kami Proses</h2>
-            <p>Seluruh pemrosesan gambar — termasuk upload template, penentuan area foto, manipulasi foto peserta, dan export hasil — dilakukan sepenuhnya di browser pengguna menggunakan JavaScript dan Canvas API.</p>
+            <p>Seluruh pemrosesan gambar, termasuk upload template, penentuan area foto, manipulasi foto peserta, dan export hasil, dilakukan sepenuhnya di browser pengguna menggunakan JavaScript dan Canvas API.</p>
             <ul>
               <li>Template twibbon tidak diunggah ke server.</li>
               <li>Foto peserta tidak dikirim ke layanan manapun.</li>

@@ -13,7 +13,7 @@ export function PhotoCard({ photo, onDelete }: PhotoCardProps) {
   useAssetUrl(photo.id, setUrl)
   return (
     <article className="photo-card">
-      {url && <img src={url} alt="" />}
+      {url && <img src={url} alt={`Foto: ${photo.fileName}`} loading="lazy" decoding="async" />}
       <span className={`status ${photo.status}`}>
         {photo.status === "ready" ? <><CheckCircle2 /> Siap</> : <><Info /> Perlu diperiksa</>}
       </span>

@@ -12,7 +12,7 @@ interface CompositionCanvasProps {
 
 export function CompositionCanvas({ project, photo, onTransform }: CompositionCanvasProps) {
   const canvas = useRef<HTMLCanvasElement>(null)
-  const drag = useRef<{ x: number; y: number; px: number; py: number } | undefined>(undefined)
+  const drag = useRef<{ x: number; y: number; px: number; py: number; displayScale: number } | undefined>(undefined)
   const [version, setVersion] = useState(0)
 
   useEffect(() => {
@@ -42,11 +42,12 @@ export function CompositionCanvas({ project, photo, onTransform }: CompositionCa
         data-render={version}
         onPointerDown={(event) => {
           event.currentTarget.setPointerCapture(event.pointerId)
-          drag.current = { x: event.clientX, y: event.clientY, px: photo.transform.x, py: photo.transform.y }
+          const displayScale = event.currentTarget.clientWidth / project.template!.width
+          drag.current = { x: event.clientX, y: event.clientY, px: photo.transform.x, py: photo.transform.y, displayScale }
         }}
         onPointerMove={(event) => {
           if (drag.current) {
-            const displayScale = event.currentTarget.clientWidth / project.template!.width
+            const { displayScale } = drag.current
             onTransform({
               x: drag.current.px + (event.clientX - drag.current.x) / displayScale,
               y: drag.current.py + (event.clientY - drag.current.y) / displayScale,

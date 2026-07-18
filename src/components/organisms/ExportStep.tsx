@@ -27,8 +27,8 @@ export function ExportStep() {
       if (error instanceof DOMException && error.name === "AbortError")
         setState((value) => ({ ...value, status: "cancelled", current: "Ekspor dibatalkan" }))
       else {
-        setState((value) => ({ ...value, status: "error", current: "Ekspor gagal" }))
-        toast.error(error instanceof Error ? error.message : "Export gagal")
+        setState((value) => ({ ...value, status: "error", current: "Ekspor gagal. Periksa ruang penyimpanan dan coba lagi." }))
+        toast.error(error instanceof Error ? error.message : "Export gagal. Pastikan ruang penyimpanan mencukupi.")
       }
     }
   }
@@ -84,7 +84,7 @@ export function ExportStep() {
             <p>{project.photos.length} foto · {project.exportSettings.width} × {project.exportSettings.height} px</p>
           </div>
           <b>{percent}%</b>
-          <div className="progress" role="progressbar" aria-valuenow={percent}>
+          <div className="progress" role="progressbar" aria-valuenow={percent} aria-valuemin={0} aria-valuemax={100}>
             <i style={{ width: `${percent}%` }} />
           </div>
           <small>{state.current || "Semua proses akan berjalan di perangkat ini."}</small>

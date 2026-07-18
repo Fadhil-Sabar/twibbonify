@@ -65,7 +65,7 @@ export function TemplateStep() {
       {project.template && url ? (
         <div className="template-card">
           <img src={url} alt="Preview template" />
-          <div>
+          <div className="template-card-info">
             <strong>{project.template.fileName}</strong>
             <span>{project.template.width} × {project.template.height} px · {(project.template.size / 1048576).toFixed(1)} MB</span>
             <span className={project.template.hasTransparency ? "status ready" : "status warning"}>

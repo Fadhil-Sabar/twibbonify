@@ -10,6 +10,7 @@ export function NumberField({ label, value, onChange }: NumberFieldProps) {
       <span>{label}</span>
       <input
         type="number"
+        inputMode="numeric"
         value={Math.round(value)}
         min={0}
         onChange={(event) => onChange(Number(event.target.value) || 0)}
