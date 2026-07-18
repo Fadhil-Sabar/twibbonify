@@ -18,7 +18,7 @@ export function LandingPage() {
               <button className="button" onClick={() => navigate("/editor?step=template")}><ImagePlus /> Mulai Buat Twibbon</button>
               <a className="button secondary" href="#cara-kerja">Lihat Cara Kerja</a>
             </div>
-            <small><LockKeyhole /> Foto tidak diunggah ke server — semuanya diproses di perangkatmu.</small>
+            <small><LockKeyhole /> Foto tidak diunggah ke server, semuanya diproses di perangkatmu.</small>
           </div>
           <HeroArt />
         </section>
