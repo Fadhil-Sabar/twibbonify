@@ -38,6 +38,50 @@ export function floodFillSelection(data: Uint8ClampedArray, width: number, heigh
   return mask
 }
 
+export function findLargestTransparentSeed(data: Uint8ClampedArray, width: number, height: number, alphaThreshold = 245) {
+  const visited = new Uint8Array(width * height)
+  const queue = new Int32Array(width * height)
+  let bestEnclosed: { seed: number; count: number } | null = null
+  let bestAny: { seed: number; count: number } | null = null
+
+  for (let start = 0; start < visited.length; start++) {
+    if (visited[start] || data[start * 4 + 3] >= alphaThreshold) continue
+    let read = 0
+    let write = 1
+    let touchesEdge = false
+    let minX = width; let minY = height; let maxX = 0; let maxY = 0
+    queue[0] = start
+    visited[start] = 1
+    while (read < write) {
+      const index = queue[read++]
+      const x = index % width
+      const y = Math.floor(index / width)
+      minX = Math.min(minX, x); minY = Math.min(minY, y); maxX = Math.max(maxX, x); maxY = Math.max(maxY, y)
+      if (x === 0 || y === 0 || x === width - 1 || y === height - 1) touchesEdge = true
+      for (const neighbor of [index - 1, index + 1, index - width, index + width]) {
+        if (neighbor < 0 || neighbor >= visited.length || visited[neighbor] || data[neighbor * 4 + 3] >= alphaThreshold) continue
+        if (Math.abs(neighbor % width - x) > 1) continue
+        visited[neighbor] = 1
+        queue[write++] = neighbor
+      }
+    }
+    const centerX = (minX + maxX) / 2
+    const centerY = (minY + maxY) / 2
+    let seed = queue[0]
+    let nearest = Number.POSITIVE_INFINITY
+    for (let index = 0; index < write; index++) {
+      const pixel = queue[index]
+      const distance = (pixel % width - centerX) ** 2 + (Math.floor(pixel / width) - centerY) ** 2
+      if (distance < nearest) { nearest = distance; seed = pixel }
+    }
+    const candidate = { seed, count: write }
+    if (!bestAny || write > bestAny.count) bestAny = candidate
+    if (!touchesEdge && (!bestEnclosed || write > bestEnclosed.count)) bestEnclosed = candidate
+  }
+  const selected = bestEnclosed ?? bestAny
+  return selected ? { x: selected.seed % width, y: Math.floor(selected.seed / width) } : null
+}
+
 export function mergeSelection(previous: Uint8Array | undefined, incoming: Uint8Array, mode: MagicSelectionMode) {
   if (!previous || mode === "replace") return incoming
   const result = previous.slice()

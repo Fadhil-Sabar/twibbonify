@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { contractSelection, convertSelectionToFrame, expandSelection, floodFillSelection, invertSelection, mergeSelection, rgbaDistance, scaleSelectionBounds, selectionBounds, validateSelection } from "./magic-selection.lib"
+import { contractSelection, convertSelectionToFrame, expandSelection, findLargestTransparentSeed, floodFillSelection, invertSelection, mergeSelection, rgbaDistance, scaleSelectionBounds, selectionBounds, validateSelection } from "./magic-selection.lib"
 
 function image(width: number, height: number, pixels: [number, number, number, number][]) {
   const data = new Uint8ClampedArray(width * height * 4)
@@ -30,6 +30,25 @@ describe("contiguous flood fill", () => {
     const data = image(3, 1, [white, gray, black])
     expect([...floodFillSelection(data, 3, 1, 0, 0, 2)]).toEqual([255, 0, 0])
     expect([...floodFillSelection(data, 3, 1, 0, 0, 10)]).toEqual([255, 255, 0])
+  })
+})
+
+describe("automatic transparent selection", () => {
+  it("prefers an enclosed transparent component over transparent canvas edges", () => {
+    const width = 7
+    const height = 7
+    const pixels: [number, number, number, number][] = Array.from({ length: width * height }, () => [20, 20, 20, 255])
+    for (let index = 0; index < width; index++) pixels[index] = [0, 0, 0, 0]
+    for (let y = 2; y <= 4; y++) for (let x = 2; x <= 4; x++) pixels[y * width + x] = [0, 0, 0, 0]
+    expect(findLargestTransparentSeed(image(width, height, pixels), width, height)).toEqual({ x: 3, y: 3 })
+  })
+
+  it("falls back to an edge-connected transparent component", () => {
+    const width = 4
+    const height = 4
+    const pixels: [number, number, number, number][] = Array.from({ length: width * height }, () => [20, 20, 20, 255])
+    for (let y = 0; y < height; y++) pixels[y * width] = [0, 0, 0, 0]
+    expect(findLargestTransparentSeed(image(width, height, pixels), width, height)).not.toBeNull()
   })
 })
 

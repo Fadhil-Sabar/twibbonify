@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { ArrowLeft, ArrowRight, RotateCcw, X } from "lucide-react"
 import { useProjectStore } from "../../stores/project.store"
 import { canOpenStep } from "../../lib/image"
@@ -8,7 +8,7 @@ import { Footer } from "../organisms/Footer"
 import { Steps } from "../atoms/Steps"
 import { PrivacyNotice } from "../atoms/PrivacyNotice"
 import { TemplateStep } from "../organisms/TemplateStep"
-import { FrameStep } from "../organisms/FrameStep"
+import { FrameStep, type FrameStepHandle } from "../organisms/FrameStep"
 import { PhotosStep } from "../organisms/PhotosStep"
 import { PreviewStep } from "../organisms/PreviewStep"
 import { ExportStep } from "../organisms/ExportStep"
@@ -18,6 +18,7 @@ export function EditorPage() {
   const { project, restore, reset } = useProjectStore()
   const [step, setStep] = useState(stepFromUrl)
   const [restorePrompt, setRestorePrompt] = useState(false)
+  const frameStepRef = useRef<FrameStepHandle>(null)
 
   useEffect(() => { restore().then(setRestorePrompt) }, [restore])
   useEffect(() => {
@@ -33,13 +34,21 @@ export function EditorPage() {
 
   const index = STEP_META.findIndex((item) => item.id === step)
 
+  const advance = useCallback(async () => {
+    if (step === "frame" && frameStepRef.current) {
+      await frameStepRef.current.handleAdvance()
+    } else {
+      go(STEP_META[index + 1].id)
+    }
+  }, [step, index, go])
+
   return (
     <>
       <Header />
       <main className="editor-main">
         <Steps active={step} project={project} go={go} />
         {step === "template" && <TemplateStep />}
-        {step === "frame" && <FrameStep onNext={() => go("photos")} />}
+        {step === "frame" && <FrameStep ref={frameStepRef} onNext={() => go("photos")} />}
         {step === "photos" && <PhotosStep />}
         {step === "preview" && <PreviewStep />}
         {step === "export" && <ExportStep />}
@@ -48,7 +57,7 @@ export function EditorPage() {
             <ArrowLeft /> Kembali
           </button>
           {step !== "export" && (
-            <button className="button" disabled={!canOpenStep(STEP_META[index + 1].id, project)} onClick={() => go(STEP_META[index + 1].id)}>
+            <button className="button" disabled={!canOpenStep(STEP_META[index + 1].id, project)} onClick={advance}>
               Lanjutkan <ArrowRight />
             </button>
           )}

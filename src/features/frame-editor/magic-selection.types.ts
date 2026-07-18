@@ -27,7 +27,7 @@ export type MagicSelectionState = {
 
 export type MagicSelectionRequest = {
   requestId: string
-  operation: "select" | "invert" | "expand" | "contract"
+  operation: "select" | "auto-transparent" | "invert" | "expand" | "contract"
   imageData?: ImageData
   width: number
   height: number
@@ -44,6 +44,7 @@ export type MagicSelectionResult = {
   mask: Uint8Array
   bounds: SelectionBounds | null
   selectedPixelCount: number
+  seed?: { x: number; y: number }
   error?: string
 }
 

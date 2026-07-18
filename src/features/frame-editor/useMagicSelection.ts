@@ -23,7 +23,13 @@ export function useMagicSelection(template: TemplateAsset | null) {
         setState((value) => ({ ...value, status: "error", errorMessage: event.data.error ?? "Selection gagal diproses" }))
         return
       }
-      setState((value) => ({ ...value, status: "ready", mask: event.data.mask, bounds: event.data.bounds, selectedPixelCount: event.data.selectedPixelCount, errorMessage: null }))
+      setState((value) => {
+        const point = event.data.seed && value.workingWidth && value.workingHeight
+          ? { x: event.data.seed.x / value.workingWidth, y: event.data.seed.y / value.workingHeight }
+          : value.lastPoint
+        if (event.data.seed && point) replayRef.current = { point, mode: "replace" }
+        return { ...value, status: event.data.selectedPixelCount ? "ready" : "idle", mask: event.data.selectedPixelCount ? event.data.mask : null, bounds: event.data.bounds, selectedPixelCount: event.data.selectedPixelCount, lastPoint: point, errorMessage: null }
+      })
     }
     worker.onerror = () => setState((value) => ({ ...value, status: "error", errorMessage: "Magic Select worker gagal dijalankan." }))
     workerRef.current = worker
@@ -72,7 +78,13 @@ export function useMagicSelection(template: TemplateAsset | null) {
 
   const activate = async () => {
     setState((value) => ({ ...value, active: true, status: "idle", errorMessage: null }))
-    try { await prepareImage() } catch (error) { setState((value) => ({ ...value, status: "error", errorMessage: error instanceof Error ? error.message : "Template gagal dibaca." })) }
+    try {
+      const image = await prepareImage()
+      if (template?.hasTransparency) {
+        const imageCopy = new ImageData(new Uint8ClampedArray(image.data), image.width, image.height)
+        post({ requestId: crypto.randomUUID(), operation: "auto-transparent", imageData: imageCopy, width: image.width, height: image.height, tolerance: state.settings.tolerance, mode: "replace" })
+      }
+    } catch (error) { setState((value) => ({ ...value, status: "error", errorMessage: error instanceof Error ? error.message : "Template gagal dibaca." })) }
   }
   const deactivate = () => {
     clearTimeout(debounceRef.current)
