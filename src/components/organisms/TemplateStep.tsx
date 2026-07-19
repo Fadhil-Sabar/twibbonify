@@ -55,7 +55,7 @@ export function TemplateStep() {
   }
 
   return (
-    <section className="step-panel narrow">
+    <section className="step-panel">
       <div className="step-heading">
         <span>LANGKAH 1 DARI 5</span>
         <h1>Upload template twibbon</h1>
