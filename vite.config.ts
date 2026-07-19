@@ -7,18 +7,52 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: "autoUpdate",
+      includeAssets: ["favicon.svg", "og-image.png"],
       manifest: {
-        name: "Twibbonify",
+        name: "Twibbonify — Bikin Twibbon Massal di Browser",
         short_name: "Twibbonify",
-        description: "Bikin banyak twibbon dalam hitungan menit. 100% diproses di perangkat, privasi terjamin.",
+        description:
+          "Satu template, puluhan twibbon. Upload, atur, unduh — 100% diproses di perangkat, privasi terjamin.",
         lang: "id",
         theme_color: "#f7f3ea",
         background_color: "#f7f3ea",
         display: "standalone",
         categories: ["design", "productivity", "photo"],
-        icons: [],
+        start_url: "/",
+        scope: "/",
+        icons: [
+          { src: "/pwa-192x192.png", sizes: "192x192", type: "image/png" },
+          { src: "/pwa-512x512.png", sizes: "512x512", type: "image/png" },
+          {
+            src: "/pwa-512x512.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "any maskable",
+          },
+        ],
       },
-      workbox: { navigateFallback: "/index.html" },
+      workbox: {
+        navigateFallback: "/index.html",
+        globPatterns: ["**/*.{js,css,html,png,svg,webmanifest}"],
+      },
     }),
   ],
+  build: {
+    cssMinify: "lightningcss",
+    sourcemap: false,
+    rollupOptions: {
+      output: {
+        manualChunks(id: string) {
+          if (id.includes("node_modules/react-dom") || id.includes("node_modules/react/"))
+            return "vendor";
+          if (
+            id.includes("node_modules/lucide-react") ||
+            id.includes("node_modules/sonner") ||
+            id.includes("node_modules/zustand")
+          )
+            return "ui";
+        },
+      },
+    },
+  },
 })
