@@ -4,7 +4,13 @@
   "private": false,
   "description": "Buat twibbon massal langsung di browser — 100% client-side.",
   "type": "module",
-  "keywords": ["twibbon", "photo-frame", "client-side", "pwa", "browser"],
+  "keywords": [
+    "twibbon",
+    "photo-frame",
+    "client-side",
+    "pwa",
+    "browser"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Fadhil-Sabar/twibbonify.git"
@@ -19,7 +25,8 @@
     "typecheck": "tsc -b --pretty false",
     "test": "vitest run",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "bun run build && wrangler dev",
+    "deploy": "bun run build && wrangler deploy"
   },
   "dependencies": {
     "@tanstack/react-router": "latest",
@@ -47,6 +54,7 @@
     "typescript-eslint": "latest",
     "vite": "latest",
     "vite-plugin-pwa": "latest",
-    "vitest": "latest"
+    "vitest": "latest",
+    "wrangler": "^4.112.0"
   }
 }

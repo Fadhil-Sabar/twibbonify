@@ -22,3 +22,9 @@ Thumbs.db
 # Report
 lighthouse*
 lh-*
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+!.env.example
