@@ -1,4 +1,4 @@
-import { ArrowRight, FileArchive, ImagePlus, LockKeyhole, ShieldCheck, Sparkles } from "lucide-react"
+import { ArrowRight, FileArchive, ImagePlus, LockKeyhole, Scissors, ShieldCheck, Sparkles } from "lucide-react"
 import { navigate } from "../../constants/steps"
 import { Header } from "../organisms/Header"
 import { Footer } from "../organisms/Footer"
@@ -25,6 +25,7 @@ export function LandingPage() {
         <section className="benefits" id="tentang">
           <article><ShieldCheck /><h2>Privasi Terjamin</h2><p>Foto peserta nggak pernah keluar dari browser. Semua diproses di sini, di perangkatmu.</p></article>
           <article><Sparkles /><h2>Proses Massal</h2><p>Upload sampai 100 foto dalam satu tarikan, biarkan sistem yang menyusun semua. Kamu tinggal unduh.</p></article>
+          <article><Scissors /><h2>Cutout PNG Transparan</h2><p>Unduh template dengan area foto berlubang, siap dipakai lagi di Canva atau aplikasi desain lain.</p></article>
           <article><FileArchive /><h2>Siap Dibagikan</h2><p>Semua hasil otomatis terbundel rapi dalam satu ZIP. Kirim langsung ke peserta tanpa ribet.</p></article>
         </section>
         <section className="how" id="cara-kerja">

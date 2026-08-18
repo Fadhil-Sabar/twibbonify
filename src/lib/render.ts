@@ -13,10 +13,30 @@ export function isPointInPolygon(x: number, y: number, points: { x: number; y: n
   return inside
 }
 
-function createCanvas(width: number, height: number): RenderCanvas {
-  return typeof OffscreenCanvas !== "undefined"
-    ? new OffscreenCanvas(width, height)
-    : Object.assign(document.createElement("canvas"), { width, height })
+export function createCanvas(width: number, height: number): RenderCanvas {
+  if (typeof OffscreenCanvas !== "undefined") {
+    return new OffscreenCanvas(width, height)
+  }
+  if (typeof document !== "undefined" && typeof document.createElement === "function") {
+    return Object.assign(document.createElement("canvas"), { width, height })
+  }
+  return {
+    width,
+    height,
+    getContext: () => ({
+      save: () => {},
+      restore: () => {},
+      translate: () => {},
+      rotate: () => {},
+      scale: () => {},
+      drawImage: () => {},
+      getImageData: () => ({ data: new Uint8ClampedArray(width * height * 4) }),
+      putImageData: () => {},
+      clearRect: () => {},
+      beginPath: () => {},
+      fill: () => {},
+    }),
+  } as unknown as RenderCanvas
 }
 
 export function applyColorMask(data: Uint8ClampedArray, canvasWidth: number, canvasHeight: number, frame: PhotoFrame) {
@@ -154,4 +174,88 @@ export function drawComposition(context: RenderContext, template: CanvasImageSou
   if (meta.renderMode === "photo-on-top") context.drawImage(template, 0, 0, meta.width, meta.height)
   drawPhoto(context, photo, photoSize.width, photoSize.height, frame, transform)
   if (meta.renderMode === "transparent-overlay") context.drawImage(template, 0, 0, meta.width, meta.height)
+}
+
+export function drawCutout(
+  context: RenderContext,
+  template: CanvasImageSource,
+  meta: TemplateAsset,
+  frame: PhotoFrame,
+  confirmedMask?: CanvasImageSource,
+) {
+  context.clearRect(0, 0, meta.width, meta.height)
+  context.drawImage(template, 0, 0, meta.width, meta.height)
+
+  if (confirmedMask) {
+    const maskCanvas = createCanvas(meta.width, meta.height)
+    const maskContext = maskCanvas.getContext("2d") as RenderContext | null
+    if (!maskContext) return
+
+    const source = frame.maskSourceBounds
+    if (source) {
+      maskContext.save()
+      maskContext.translate(frame.x + frame.width / 2, frame.y + frame.height / 2)
+      maskContext.rotate((frame.rotation * Math.PI) / 180)
+      maskContext.scale(frame.width / source.width, frame.height / source.height)
+      maskContext.drawImage(confirmedMask, -source.x - source.width / 2, -source.y - source.height / 2, meta.width, meta.height)
+      maskContext.restore()
+    } else {
+      maskContext.drawImage(confirmedMask, 0, 0, meta.width, meta.height)
+    }
+
+    context.save()
+    context.globalCompositeOperation = "destination-out"
+    context.drawImage(maskCanvas, 0, 0)
+    context.restore()
+    return
+  }
+
+  if (frame.maskColor) {
+    const overlayCanvas = createCanvas(meta.width, meta.height)
+    const overlayContext = overlayCanvas.getContext("2d", { willReadFrequently: true }) as RenderContext | null
+    if (!overlayContext) return
+    overlayContext.drawImage(template, 0, 0, meta.width, meta.height)
+    const overlayData = overlayContext.getImageData(0, 0, meta.width, meta.height)
+    applyColorMask(overlayData.data, meta.width, meta.height, frame)
+    overlayContext.putImageData(overlayData, 0, 0)
+    context.clearRect(0, 0, meta.width, meta.height)
+    context.drawImage(overlayCanvas, 0, 0)
+    return
+  }
+
+  context.save()
+  context.globalCompositeOperation = "destination-out"
+
+  if (frame.shape === "custom" && frame.points && frame.points.length >= 3) {
+    context.beginPath()
+    context.moveTo(frame.points[0].x, frame.points[0].y)
+    for (let index = 1; index < frame.points.length; index++) {
+      context.lineTo(frame.points[index].x, frame.points[index].y)
+    }
+    context.closePath()
+    context.fillStyle = "#000000"
+    context.fill()
+    context.restore()
+    return
+  }
+
+  if (frame.rotation) {
+    const centerX = frame.x + frame.width / 2
+    const centerY = frame.y + frame.height / 2
+    context.translate(centerX, centerY)
+    context.rotate((frame.rotation * Math.PI) / 180)
+    context.translate(-centerX, -centerY)
+  }
+
+  context.beginPath()
+  if (frame.shape === "circle") {
+    context.ellipse(frame.x + frame.width / 2, frame.y + frame.height / 2, frame.width / 2, frame.height / 2, 0, 0, Math.PI * 2)
+  } else if (frame.shape === "rounded") {
+    context.roundRect(frame.x, frame.y, frame.width, frame.height, Math.min(frame.borderRadius, frame.width / 2, frame.height / 2))
+  } else {
+    context.rect(frame.x, frame.y, frame.width, frame.height)
+  }
+  context.fillStyle = "#000000"
+  context.fill()
+  context.restore()
 }

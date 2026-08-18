@@ -1,8 +1,9 @@
 import { useState } from "react"
-import { ImagePlus, Plus, Trash2 } from "lucide-react"
+import { Download, ImagePlus, Plus, Trash2 } from "lucide-react"
 import { toast } from "sonner"
 import { saveAsset } from "../../db/database"
 import { defaultTransform, readImage, validateImageFile } from "../../lib/image"
+import { downloadBlob, exportTemplateCutout, getCutoutFilename } from "../../lib/export"
 import { useProjectStore } from "../../stores/project.store"
 import { Dropzone } from "../molecules/Dropzone"
 import { PhotoCard } from "../molecules/PhotoCard"
@@ -11,6 +12,25 @@ import type { ImageMime, PhotoItem } from "../../types/project"
 export function PhotosStep() {
   const { project, addPhotos, removePhoto, update } = useProjectStore()
   const [busy, setBusy] = useState(false)
+  const [cutoutBusy, setCutoutBusy] = useState(false)
+
+  const downloadCutout = async () => {
+    if (!project.template || !project.frame) {
+      toast.error("Template atau bingkai belum ditentukan.")
+      return
+    }
+    setCutoutBusy(true)
+    try {
+      const blob = await exportTemplateCutout(project)
+      const filename = getCutoutFilename(project)
+      downloadBlob(blob, filename)
+      toast.success("Cutout bingkai transparan berhasil diunduh.")
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Gagal mengunduh cutout frame.")
+    } finally {
+      setCutoutBusy(false)
+    }
+  }
 
   const upload = async (files: File[]) => {
     if (!project.frame) return
@@ -59,14 +79,34 @@ export function PhotosStep() {
       </div>
 
       {project.photos.length === 0 && (
-        <Dropzone multiple onFiles={upload}>
-          <span className="upload-icon"><ImagePlus /></span>
-          <h2>{busy ? "Memproses foto..." : "Seret & lepas semua foto"}</h2>
-          <p>atau ketuk untuk memilih dari galeri</p>
-          <div className="chips">
-            <span>JPG</span><span>PNG</span><span>WebP</span><span>Maks. 20 MB</span>
+        <>
+          <Dropzone multiple onFiles={upload}>
+            <span className="upload-icon"><ImagePlus /></span>
+            <h2>{busy ? "Memproses foto..." : "Seret & lepas semua foto"}</h2>
+            <p>atau ketuk untuk memilih dari galeri</p>
+            <div className="chips">
+              <span>JPG</span><span>PNG</span><span>WebP</span><span>Maks. 20 MB</span>
+            </div>
+          </Dropzone>
+
+          <div className="cutout-banner">
+            <div>
+              <strong>Butuh file template transparan saja?</strong>
+              <p>Unduh cutout bingkai PNG transparan dengan area foto yang sudah berlubang untuk diedit di Canva atau aplikasi lain.</p>
+            </div>
+            <button
+              type="button"
+              className="button secondary compact"
+              onClick={downloadCutout}
+              disabled={cutoutBusy || !project.template || !project.frame}
+              aria-busy={cutoutBusy}
+              aria-label="Unduh bingkai cutout PNG transparan"
+            >
+              {cutoutBusy ? <span className="spinner" /> : <Download />}
+              {cutoutBusy ? "Memproses..." : "Unduh Cutout PNG"}
+            </button>
           </div>
-        </Dropzone>
+        </>
       )}
 
       <div className="photo-toolbar">
